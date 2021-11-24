@@ -8,7 +8,7 @@ homepage = "https://github.com/hougesen/sensor-dashboard"
 repository = "https://github.com/hougesen/sensor-dashboard"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.6.0,<4"
 requests = "^2.26.0"
 bme680 = "^1.1.1"
 

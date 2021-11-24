@@ -77,8 +77,8 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.9"
-content-hash = "5a182cebdd6eb87d75f398fcc905522c4bad576e5438c6b1b74b9aa9c88e1461"
+python-versions = ">=3.6.0,<4"
+content-hash = "cecb4e9a4e4156a5c8faa8b068e63288643fe7c020fae109403ba6a9a96f7300"
 
 [metadata.files]
 bme680 = [
