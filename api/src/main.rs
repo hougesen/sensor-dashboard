@@ -22,12 +22,12 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(pool.clone())
             .service(hello)
-            .service(web::resource("/measurement/new").route(web::post().to(insert_measurement)))
+            .service(web::resource("/measurement/new").route(web::post().to(post_measurement)))
             .service(
-                web::resource("/measurement-type/new")
-                    .route(web::post().to(insert_measurement_type)),
+                web::resource("/measurement-type/new").route(web::post().to(post_measurement_type)),
             )
-            .service(web::resource("/location/new").route(web::post().to(insert_location)))
+            .service(web::resource("/location/new").route(web::post().to(post_location)))
+            .service(web::resource("/measurements").route(web::get().to(get_measurements)))
     })
     .bind(config.server_addr.clone())?
     .run();

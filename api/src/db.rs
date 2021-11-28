@@ -2,12 +2,13 @@ use crate::{errors::MyError, models::*};
 use deadpool_postgres::Client;
 use tokio_pg_mapper::FromTokioPostgresRow;
 
+// Measurement
 pub async fn insert_measurement(
     client: &Client,
-    measurement: Measurements,
-) -> Result<Measurements, MyError> {
+    measurement: Measurement,
+) -> Result<Measurement, MyError> {
     let _stmt = include_str!("../queries/insert_measurement.sql");
-    let _stmt = _stmt.replace("$table_fields", &Measurements::sql_table_fields());
+    let _stmt = _stmt.replace("$table_fields", &Measurement::sql_table_fields());
     let stmt = client.prepare(&_stmt).await.unwrap();
 
     client
@@ -22,12 +23,29 @@ pub async fn insert_measurement(
         )
         .await?
         .iter()
-        .map(|row| Measurements::from_row_ref(row).unwrap())
-        .collect::<Vec<Measurements>>()
+        .map(|row| Measurement::from_row_ref(row).unwrap())
+        .collect::<Vec<Measurement>>()
         .pop()
         .ok_or(MyError::NotFound)
 }
 
+pub async fn select_measurements(client: &Client) -> Result<Vec<Measurement>, MyError> {
+    let stmt = client
+        .prepare("SELECT * FROM measurements ORDER BY measurement_time DESC")
+        .await
+        .unwrap();
+
+    let result = client
+        .query(&stmt, &[])
+        .await?
+        .iter()
+        .map(|row| Measurement::from_row_ref(row).unwrap())
+        .collect::<Vec<Measurement>>();
+
+    Ok(result)
+}
+
+// MeasurementType
 pub async fn insert_measurement_type(
     client: &Client,
     measurement_type: MeasurementType,
@@ -45,6 +63,8 @@ pub async fn insert_measurement_type(
         .pop()
         .ok_or(MyError::NotFound)
 }
+
+// Location
 
 pub async fn insert_location(client: &Client, location: Location) -> Result<Location, MyError> {
     let _stmt = include_str!("../queries/insert_location.sql");

@@ -2,18 +2,30 @@ use crate::{db, errors::MyError, models::*};
 use actix_web::{web, Error, HttpResponse};
 use deadpool_postgres::{Client, Pool};
 
-pub async fn insert_measurement(
+// Measurement
+pub async fn post_measurement(
     db_pool: web::Data<Pool>,
-    measurement_data: web::Json<Measurements>,
+    measurement_data: web::Json<Measurement>,
 ) -> Result<HttpResponse, Error> {
-    let measurement: Measurements = measurement_data.into_inner();
+    let measurement: Measurement = measurement_data.into_inner();
     let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
     let new_measurement = db::insert_measurement(&client, measurement).await?;
 
     Ok(HttpResponse::Ok().json(new_measurement))
 }
 
-pub async fn insert_measurement_type(
+pub async fn get_measurements(db_pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+
+    let measurements = db::select_measurements(&client).await?;
+
+    Ok(HttpResponse::Ok().json(measurements))
+}
+
+pub async fn get_measurements_by_location() {}
+
+// MeasurementType
+pub async fn post_measurement_type(
     db_pool: web::Data<Pool>,
     measurement_type_data: web::Json<MeasurementType>,
 ) -> Result<HttpResponse, Error> {
@@ -24,7 +36,12 @@ pub async fn insert_measurement_type(
     Ok(HttpResponse::Ok().json(new_measurement))
 }
 
-pub async fn insert_location(
+pub async fn get_measurement_types() {}
+
+pub async fn get_measurement_type_by_id() {}
+
+// Location
+pub async fn post_location(
     db_pool: web::Data<Pool>,
     location_data: web::Json<Location>,
 ) -> Result<HttpResponse, Error> {
@@ -34,3 +51,7 @@ pub async fn insert_location(
 
     Ok(HttpResponse::Ok().json(new_location))
 }
+
+pub async fn get_locations() {}
+
+pub async fn get_location_by_id() {}
