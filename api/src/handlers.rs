@@ -1,5 +1,5 @@
 use crate::{db, errors::MyError, models::*};
-use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, Error, HttpResponse};
 use deadpool_postgres::{Client, Pool};
 use std::collections::HashMap;
 
@@ -43,6 +43,7 @@ pub async fn get_measurements_by_location(
     Ok(HttpResponse::Ok().json(response))
 }
 
+#[get("/measurements/type/{measurement_type_id}")]
 pub async fn get_measurements_by_type(
     db_pool: web::Data<Pool>,
     measurement_type_id: web::Path<i32>,
@@ -58,6 +59,7 @@ pub async fn get_measurements_by_type(
 }
 
 // MeasurementType
+#[post("/measurement-type")]
 pub async fn post_measurement_type(
     db_pool: web::Data<Pool>,
     measurement_type_data: web::Json<MeasurementType>,
@@ -69,6 +71,7 @@ pub async fn post_measurement_type(
     Ok(HttpResponse::Ok().json(new_measurement))
 }
 
+#[get("/measurement-types")]
 pub async fn get_measurement_types(db_pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
     let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
 
@@ -83,6 +86,7 @@ pub async fn get_measurement_types(db_pool: web::Data<Pool>) -> Result<HttpRespo
 pub async fn get_measurement_type_by_id() {}
 
 // Location
+#[post("/location")]
 pub async fn post_location(
     db_pool: web::Data<Pool>,
     location_data: web::Json<Location>,
@@ -94,6 +98,28 @@ pub async fn post_location(
     Ok(HttpResponse::Ok().json(new_location))
 }
 
-pub async fn get_locations() {}
+#[get("/locations")]
+pub async fn get_locations(db_pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
 
-pub async fn get_location_by_id() {}
+    let locations = db::select_locations(&client).await?;
+    let mut response: HashMap<&str, Vec<Location>> = HashMap::new();
+    response.insert("locations", locations);
+
+    Ok(HttpResponse::Ok().json(response))
+}
+
+#[get("/location/{location_id}")]
+pub async fn get_location_by_id(
+    db_pool: web::Data<Pool>,
+    location_id: web::Path<i32>,
+) -> Result<HttpResponse, Error> {
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+    let location_id = location_id.into_inner();
+    let location = db::select_location_by_id(&client, location_id).await?;
+
+    let mut response: HashMap<&str, Location> = HashMap::new();
+    response.insert("location", location);
+
+    Ok(HttpResponse::Ok().json(response))
+}

@@ -1,4 +1,4 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
 use handlers::*;
 use tokio_postgres::NoTls;
@@ -28,6 +28,8 @@ async fn main() -> std::io::Result<()> {
             .service(get_measurements_by_type)
             .service(get_measurement_types)
             .service(post_measurement_type)
+            .service(get_locations)
+            .service(get_location_by_id)
             .service(post_location)
     })
     .bind(config.server_addr.clone())?

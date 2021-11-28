@@ -133,3 +133,32 @@ pub async fn insert_location(client: &Client, location: Location) -> Result<Loca
         .pop()
         .ok_or(MyError::NotFound)
 }
+
+pub async fn select_locations(client: &Client) -> Result<Vec<Location>, MyError> {
+    let stmt = client.prepare("SELECT * FROM locations").await.unwrap();
+
+    let result = client
+        .query(&stmt, &[])
+        .await?
+        .iter()
+        .map(|row| Location::from_row_ref(row).unwrap())
+        .collect::<Vec<Location>>();
+
+    Ok(result)
+}
+
+pub async fn select_location_by_id(client: &Client, location_id: i32) -> Result<Location, MyError> {
+    let stmt = client
+        .prepare("SELECT * FROM locations WHERE location_id = $1")
+        .await
+        .unwrap();
+
+    client
+        .query(&stmt, &[&location_id])
+        .await?
+        .iter()
+        .map(|row| Location::from_row_ref(row).unwrap())
+        .collect::<Vec<Location>>()
+        .pop()
+        .ok_or(MyError::NotFound)
+}
