@@ -27,6 +27,7 @@ async fn main() -> std::io::Result<()> {
                 web::resource("/measurement-type/new")
                     .route(web::post().to(insert_measurement_type)),
             )
+            .service(web::resource("/location/new").route(web::post().to(insert_location)))
     })
     .bind(config.server_addr.clone())?
     .run();

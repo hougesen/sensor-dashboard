@@ -6,15 +6,9 @@ pub async fn insert_measurement(
     db_pool: web::Data<Pool>,
     measurement_data: web::Json<Measurements>,
 ) -> Result<HttpResponse, Error> {
-    println!("insert_measurement handler");
-
     let measurement: Measurements = measurement_data.into_inner();
-
     let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
-
     let new_measurement = db::insert_measurement(&client, measurement).await?;
-    println!("done inserting");
-    println!("new_measurement {:?}", new_measurement);
 
     Ok(HttpResponse::Ok().json(new_measurement))
 }
@@ -23,13 +17,20 @@ pub async fn insert_measurement_type(
     db_pool: web::Data<Pool>,
     measurement_type_data: web::Json<MeasurementType>,
 ) -> Result<HttpResponse, Error> {
-    println!("insert_measurement_type handler");
     let measurement_type = measurement_type_data.into_inner();
     let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
-
     let new_measurement = db::insert_measurement_type(&client, measurement_type).await?;
-    println!("done inserting");
-    println!("new_measurement {:?}", new_measurement);
 
     Ok(HttpResponse::Ok().json(new_measurement))
+}
+
+pub async fn insert_location(
+    db_pool: web::Data<Pool>,
+    location_data: web::Json<Location>,
+) -> Result<HttpResponse, Error> {
+    let location = location_data.into_inner();
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+    let new_location = db::insert_location(&client, location).await?;
+
+    Ok(HttpResponse::Ok().json(new_location))
 }
