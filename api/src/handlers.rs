@@ -1,6 +1,7 @@
 use crate::{db, errors::MyError, models::*};
 use actix_web::{web, Error, HttpResponse};
 use deadpool_postgres::{Client, Pool};
+use std::collections::HashMap;
 
 // Measurement
 pub async fn post_measurement(
@@ -18,8 +19,10 @@ pub async fn get_measurements(db_pool: web::Data<Pool>) -> Result<HttpResponse, 
     let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
 
     let measurements = db::select_measurements(&client).await?;
+    let mut response: HashMap<&str, Vec<Measurement>> = HashMap::new();
+    response.insert("measurements", measurements);
 
-    Ok(HttpResponse::Ok().json(measurements))
+    Ok(HttpResponse::Ok().json(response))
 }
 
 pub async fn get_measurements_by_location(
@@ -31,7 +34,25 @@ pub async fn get_measurements_by_location(
 
     let measurements = db::select_measurements_by_location(&client, location_id).await?;
 
-    Ok(HttpResponse::Ok().json(measurements))
+    let mut response: HashMap<&str, Vec<Measurement>> = HashMap::new();
+    response.insert("measurements", measurements);
+
+    Ok(HttpResponse::Ok().json(response))
+}
+
+pub async fn get_measurements_by_type(
+    db_pool: web::Data<Pool>,
+    measurement_type_id: web::Path<i32>,
+) -> Result<HttpResponse, Error> {
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+    let measurement_type_id = measurement_type_id.into_inner();
+
+    let measurements = db::select_measurements_by_type(&client, measurement_type_id).await?;
+
+    let mut response: HashMap<&str, Vec<Measurement>> = HashMap::new();
+    response.insert("measurements", measurements);
+
+    Ok(HttpResponse::Ok().json(response))
 }
 
 // MeasurementType
