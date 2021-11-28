@@ -22,7 +22,17 @@ pub async fn get_measurements(db_pool: web::Data<Pool>) -> Result<HttpResponse, 
     Ok(HttpResponse::Ok().json(measurements))
 }
 
-pub async fn get_measurements_by_location() {}
+pub async fn get_measurements_by_location(
+    db_pool: web::Data<Pool>,
+    location_id: web::Path<i32>,
+) -> Result<HttpResponse, Error> {
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+    let location_id = location_id.into_inner();
+
+    let measurements = db::select_measurements_by_location(&client, location_id).await?;
+
+    Ok(HttpResponse::Ok().json(measurements))
+}
 
 // MeasurementType
 pub async fn post_measurement_type(

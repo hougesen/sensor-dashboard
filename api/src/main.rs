@@ -28,6 +28,10 @@ async fn main() -> std::io::Result<()> {
             )
             .service(web::resource("/location/new").route(web::post().to(post_location)))
             .service(web::resource("/measurements").route(web::get().to(get_measurements)))
+            .service(
+                web::resource("/measurements/location/{location_id}")
+                    .route(web::get().to(get_measurements_by_location)),
+            )
     })
     .bind(config.server_addr.clone())?
     .run();

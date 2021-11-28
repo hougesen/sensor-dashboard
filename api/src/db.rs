@@ -45,6 +45,25 @@ pub async fn select_measurements(client: &Client) -> Result<Vec<Measurement>, My
     Ok(result)
 }
 
+pub async fn select_measurements_by_location(
+    client: &Client,
+    location_id: i32,
+) -> Result<Vec<Measurement>, MyError> {
+    let stmt = client
+        .prepare("SELECT * FROM measurements WHERE location_id = $1 ORDER BY measurement_time DESC")
+        .await
+        .unwrap();
+
+    let result = client
+        .query(&stmt, &[&location_id])
+        .await?
+        .iter()
+        .map(|row| Measurement::from_row_ref(row).unwrap())
+        .collect::<Vec<Measurement>>();
+
+    Ok(result)
+}
+
 // MeasurementType
 pub async fn insert_measurement_type(
     client: &Client,
