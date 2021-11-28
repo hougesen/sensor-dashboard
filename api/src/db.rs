@@ -7,7 +7,7 @@ pub async fn insert_measurement(
     client: &Client,
     measurement: Measurement,
 ) -> Result<Measurement, MyError> {
-    let _stmt = include_str!("../queries/insert_measurement.sql");
+    let _stmt = "INSERT INTO measurements (measurement_type_id, location_id, measurement_value, measurement_time) VALUES ($1, $2, $3, $4) RETURNING $table_fields;";
     let _stmt = _stmt.replace("$table_fields", &Measurement::sql_table_fields());
     let stmt = client.prepare(&_stmt).await.unwrap();
 
@@ -31,7 +31,7 @@ pub async fn insert_measurement(
 
 pub async fn select_measurements(client: &Client) -> Result<Vec<Measurement>, MyError> {
     let stmt = client
-        .prepare("SELECT * FROM measurements ORDER BY measurement_time DESC")
+        .prepare("SELECT * FROM measurements ORDER BY measurement_time DESC;")
         .await
         .unwrap();
 
@@ -50,7 +50,9 @@ pub async fn select_measurements_by_location(
     location_id: i32,
 ) -> Result<Vec<Measurement>, MyError> {
     let stmt = client
-        .prepare("SELECT * FROM measurements WHERE location_id = $1 ORDER BY measurement_time DESC")
+        .prepare(
+            "SELECT * FROM measurements WHERE location_id = $1 ORDER BY measurement_time DESC;",
+        )
         .await
         .unwrap();
 
@@ -69,9 +71,9 @@ pub async fn select_measurements_by_type(
     measurement_type_id: i32,
 ) -> Result<Vec<Measurement>, MyError> {
     let stmt = client
-        .prepare("SELECT * FROM measurements WHERE measurement_type_id = $1 ORDER BY measurement_time DESC")
-        .await
-        .unwrap();
+ .prepare("SELECT * FROM measurements WHERE measurement_type_id = $1 ORDER BY measurement_time DESC;")
+ .await
+ .unwrap();
 
     let result = client
         .query(&stmt, &[&measurement_type_id])
@@ -88,7 +90,7 @@ pub async fn insert_measurement_type(
     client: &Client,
     measurement_type: MeasurementType,
 ) -> Result<MeasurementType, MyError> {
-    let _stmt = include_str!("../queries/insert_measurement_type.sql");
+    let _stmt = "INSERT INTO measurement_types (measurement_type_name) VALUES ($1) RETURNING $table_fields;";
     let _stmt = _stmt.replace("$table_fields", &MeasurementType::sql_table_fields());
     let stmt = client.prepare(&_stmt).await.unwrap();
 
@@ -104,7 +106,7 @@ pub async fn insert_measurement_type(
 
 pub async fn select_measurement_types(client: &Client) -> Result<Vec<MeasurementType>, MyError> {
     let stmt = client
-        .prepare("SELECT * FROM measurement_types")
+        .prepare("SELECT * FROM measurement_types;")
         .await
         .unwrap();
 
@@ -123,7 +125,7 @@ pub async fn select_measurement_type_by_id(
     measurement_type_id: i32,
 ) -> Result<MeasurementType, MyError> {
     let stmt = client
-        .prepare("SELECT * from measurement_types WHERE measurement_type_id = $1")
+        .prepare("SELECT * from measurement_types WHERE measurement_type_id = $1;")
         .await
         .unwrap();
 
@@ -139,7 +141,7 @@ pub async fn select_measurement_type_by_id(
 
 // Location
 pub async fn insert_location(client: &Client, location: Location) -> Result<Location, MyError> {
-    let _stmt = include_str!("../queries/insert_location.sql");
+    let _stmt = "INSERT INTO locations (location_name) VALUES ($1) RETURNING $table_fields;";
     let _stmt = _stmt.replace("$table_fields", &Location::sql_table_fields());
     let stmt = client.prepare(&_stmt).await.unwrap();
 
@@ -154,7 +156,7 @@ pub async fn insert_location(client: &Client, location: Location) -> Result<Loca
 }
 
 pub async fn select_locations(client: &Client) -> Result<Vec<Location>, MyError> {
-    let stmt = client.prepare("SELECT * FROM locations").await.unwrap();
+    let stmt = client.prepare("SELECT * FROM locations;").await.unwrap();
 
     let result = client
         .query(&stmt, &[])
@@ -168,7 +170,7 @@ pub async fn select_locations(client: &Client) -> Result<Vec<Location>, MyError>
 
 pub async fn select_location_by_id(client: &Client, location_id: i32) -> Result<Location, MyError> {
     let stmt = client
-        .prepare("SELECT * FROM locations WHERE location_id = $1")
+        .prepare("SELECT * FROM locations WHERE location_id = $1;")
         .await
         .unwrap();
 
