@@ -29,7 +29,7 @@ sensor.set_gas_heater_duration(150)
 sensor.select_gas_heater_profile(0)
 
 
-def read_sensor_data():
+def read_sensor_data() -> None:
     if sensor.get_sensor_data():
 
         if sensor.data.temperature:
@@ -40,7 +40,7 @@ def read_sensor_data():
             print(f"pressure: {sensor.data.pressure}")
             send_sensor_data(sensor.data.pressure, 2)
 
-        if sensor.data.humidity:
+        if sensor.data.humidity is not None:
             print(f"humidity: {sensor.data.humidity}")
             send_sensor_data(sensor.data.humidity, 3)
 
@@ -51,7 +51,7 @@ def read_sensor_data():
             print("sensor.data.heat_stable is not stable")
 
 
-def send_sensor_data(value, type):
+def send_sensor_data(value: int, type: int) -> None:
     try:
         sensor_data = {
             "measurement_type_id": type,
