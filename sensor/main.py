@@ -4,7 +4,7 @@ import requests
 from datetime import datetime
 
 # API HOST
-API_HOST = "192.168.86.64:5000"
+API_HOST = "http://192.168.87.64:5000"
 
 # Location of pi
 LOCATION_ID = 1
@@ -57,7 +57,7 @@ def send_sensor_data(value: int, type: int) -> None:
             "measurement_type_id": type,
             "location_id": LOCATION_ID,
             "measurement_value": value,
-            "measurement_time": datetime.now().isoformat()
+            "measurement_time": f"{datetime.now().isoformat()}Z"
         }
 
         r = requests.post(f"{API_HOST}/measurement", json=sensor_data)
