@@ -102,8 +102,23 @@ pub async fn insert_measurement_type(
         .ok_or(MyError::NotFound)
 }
 
-// Location
+pub async fn select_measurement_types(client: &Client) -> Result<Vec<MeasurementType>, MyError> {
+    let stmt = client
+        .prepare("SELECT * FROM measurement_types")
+        .await
+        .unwrap();
 
+    let result = client
+        .query(&stmt, &[])
+        .await?
+        .iter()
+        .map(|row| MeasurementType::from_row_ref(row).unwrap())
+        .collect::<Vec<MeasurementType>>();
+
+    Ok(result)
+}
+
+// Location
 pub async fn insert_location(client: &Client, location: Location) -> Result<Location, MyError> {
     let _stmt = include_str!("../queries/insert_location.sql");
     let _stmt = _stmt.replace("$table_fields", &Location::sql_table_fields());

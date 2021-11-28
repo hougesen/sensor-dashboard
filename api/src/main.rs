@@ -23,10 +23,6 @@ async fn main() -> std::io::Result<()> {
             .data(pool.clone())
             .service(hello)
             .service(web::resource("/measurement/new").route(web::post().to(post_measurement)))
-            .service(
-                web::resource("/measurement-type/new").route(web::post().to(post_measurement_type)),
-            )
-            .service(web::resource("/location/new").route(web::post().to(post_location)))
             .service(web::resource("/measurements").route(web::get().to(get_measurements)))
             .service(
                 web::resource("/measurements/location/{location_id}")
@@ -36,6 +32,13 @@ async fn main() -> std::io::Result<()> {
                 web::resource("/measurements/type/{measurement_type_id}")
                     .route(web::get().to(get_measurements_by_type)),
             )
+            .service(
+                web::resource("/measurement-types").route(web::get().to(get_measurement_types)),
+            )
+            .service(
+                web::resource("/measurement-type/new").route(web::post().to(post_measurement_type)),
+            )
+            .service(web::resource("/location/new").route(web::post().to(post_location)))
     })
     .bind(config.server_addr.clone())?
     .run();
