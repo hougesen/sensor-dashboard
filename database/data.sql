@@ -1,12 +1,12 @@
-/* Locations */
-INSERT INTO Locations (location_name)
+/* locations */
+INSERT INTO locations (location_name)
 VALUES ('bedroom');
-/* MeasurementTypes */
-INSERT INTO MeasurementTypes(measurement_type_name)
+/* measurement_types */
+INSERT INTO measurement_types(measurement_type_name)
 VALUES ('temperature');
-INSERT INTO MeasurementTypes(measurement_type_name)
+INSERT INTO measurement_types(measurement_type_name)
 VALUES ('pressure');
-INSERT INTO MeasurementTypes(measurement_type_name)
+INSERT INTO measurement_types(measurement_type_name)
 VALUES ('humidity');
-INSERT INTO MeasurementTypes(measurement_type_name)
+INSERT INTO measurement_types(measurement_type_name)
 VALUES ('gas_resistance');
