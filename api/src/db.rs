@@ -118,6 +118,25 @@ pub async fn select_measurement_types(client: &Client) -> Result<Vec<Measurement
     Ok(result)
 }
 
+pub async fn select_measurement_type_by_id(
+    client: &Client,
+    measurement_type_id: i32,
+) -> Result<MeasurementType, MyError> {
+    let stmt = client
+        .prepare("SELECT * from measurement_types WHERE measurement_type_id = $1")
+        .await
+        .unwrap();
+
+    client
+        .query(&stmt, &[&measurement_type_id])
+        .await?
+        .iter()
+        .map(|row| MeasurementType::from_row_ref(row).unwrap())
+        .collect::<Vec<MeasurementType>>()
+        .pop()
+        .ok_or(MyError::NotFound)
+}
+
 // Location
 pub async fn insert_location(client: &Client, location: Location) -> Result<Location, MyError> {
     let _stmt = include_str!("../queries/insert_location.sql");

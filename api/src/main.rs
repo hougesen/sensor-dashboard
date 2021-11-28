@@ -27,6 +27,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_measurements_by_location)
             .service(get_measurements_by_type)
             .service(get_measurement_types)
+            .service(get_measurement_type_by_id)
             .service(post_measurement_type)
             .service(get_locations)
             .service(get_location_by_id)

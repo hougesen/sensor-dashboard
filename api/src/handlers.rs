@@ -83,7 +83,20 @@ pub async fn get_measurement_types(db_pool: web::Data<Pool>) -> Result<HttpRespo
     Ok(HttpResponse::Ok().json(response))
 }
 
-pub async fn get_measurement_type_by_id() {}
+#[get("/measurement-type/{measurement_type_id}")]
+pub async fn get_measurement_type_by_id(
+    db_pool: web::Data<Pool>,
+    measurement_type_id: web::Path<i32>,
+) -> Result<HttpResponse, Error> {
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+    let measurement_type_id = measurement_type_id.into_inner();
+    let measurement_type = db::select_measurement_type_by_id(&client, measurement_type_id).await?;
+
+    let mut response: HashMap<&str, MeasurementType> = HashMap::new();
+    response.insert("measurement-type", measurement_type);
+
+    Ok(HttpResponse::Ok().json(response))
+}
 
 // Location
 #[post("/location")]
