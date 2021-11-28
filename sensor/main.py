@@ -60,7 +60,7 @@ def send_sensor_data(value: int, type: int) -> None:
             "measurement_time": datetime.now().isoformat()
         }
 
-        r = requests.post(f"{API_HOST}/measurement/new", json=sensor_data)
+        r = requests.post(f"{API_HOST}/measurement", json=sensor_data)
         print("r", r)
 
     except requests.exceptions.RequestException as error:

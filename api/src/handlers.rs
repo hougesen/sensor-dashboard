@@ -1,9 +1,11 @@
 use crate::{db, errors::MyError, models::*};
-use actix_web::{get, web, App, Error, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, Error, HttpResponse, HttpServer, Responder};
 use deadpool_postgres::{Client, Pool};
 use std::collections::HashMap;
 
 // Measurement
+
+#[post("/measurement")]
 pub async fn post_measurement(
     db_pool: web::Data<Pool>,
     measurement_data: web::Json<Measurement>,
@@ -15,6 +17,7 @@ pub async fn post_measurement(
     Ok(HttpResponse::Ok().json(new_measurement))
 }
 
+#[get("/measurements")]
 pub async fn get_measurements(db_pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
     let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
     let measurements = db::select_measurements(&client).await?;
@@ -25,6 +28,7 @@ pub async fn get_measurements(db_pool: web::Data<Pool>) -> Result<HttpResponse, 
     Ok(HttpResponse::Ok().json(response))
 }
 
+#[get("/measurements/location/{location_id}")]
 pub async fn get_measurements_by_location(
     db_pool: web::Data<Pool>,
     location_id: web::Path<i32>,

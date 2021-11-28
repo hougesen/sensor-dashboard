@@ -22,23 +22,13 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .data(pool.clone())
             .service(hello)
-            .service(web::resource("/measurement/new").route(web::post().to(post_measurement)))
-            .service(web::resource("/measurements").route(web::get().to(get_measurements)))
-            .service(
-                web::resource("/measurements/location/{location_id}")
-                    .route(web::get().to(get_measurements_by_location)),
-            )
-            .service(
-                web::resource("/measurements/type/{measurement_type_id}")
-                    .route(web::get().to(get_measurements_by_type)),
-            )
-            .service(
-                web::resource("/measurement-types").route(web::get().to(get_measurement_types)),
-            )
-            .service(
-                web::resource("/measurement-type/new").route(web::post().to(post_measurement_type)),
-            )
-            .service(web::resource("/location/new").route(web::post().to(post_location)))
+            .service(post_measurement)
+            .service(get_measurements)
+            .service(get_measurements_by_location)
+            .service(get_measurements_by_type)
+            .service(get_measurement_types)
+            .service(post_measurement_type)
+            .service(post_location)
     })
     .bind(config.server_addr.clone())?
     .run();
@@ -52,5 +42,5 @@ async fn main() -> std::io::Result<()> {
 async fn hello() -> impl Responder {
     println!("GET /");
 
-    HttpResponse::Ok().body("hello fam swal")
+    HttpResponse::Ok().body("hello fam squad")
 }
