@@ -25,3 +25,10 @@ pub struct MeasurementType {
     pub measurement_type_id: Option<i32>,
     pub measurement_type_name: String,
 }
+
+#[derive(Clone, Deserialize, Serialize, Debug, PartialEq)]
+pub struct AverageKpi {
+    pub measurement_name: String,
+    pub location_name: String,
+    pub average_value: f64,
+}

@@ -136,3 +136,17 @@ pub async fn get_location_by_id(
 
     Ok(HttpResponse::Ok().json(response))
 }
+
+#[get("/average/{location_id}")]
+pub async fn get_average_by_location(
+    db_pool: web::Data<Pool>,
+    location_id: web::Path<i32>,
+) -> Result<HttpResponse, Error> {
+    let client: Client = db_pool.get().await.map_err(MyError::PoolError)?;
+    let location_id = location_id.into_inner();
+    let location = db::get_average_by_location(&client, location_id).await?;
+    let mut response: HashMap<&str, Vec<AverageKpi>> = HashMap::new();
+    response.insert("averages", location);
+
+    Ok(HttpResponse::Ok().json(response))
+}

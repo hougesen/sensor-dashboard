@@ -70,10 +70,9 @@ pub async fn select_measurements_by_type(
     client: &Client,
     measurement_type_id: i32,
 ) -> Result<Vec<Measurement>, MyError> {
-    let stmt = client
- .prepare("SELECT * FROM measurements WHERE measurement_type_id = $1 ORDER BY measurement_time DESC;")
- .await
- .unwrap();
+    let stmt = client.prepare("SELECT * FROM measurements WHERE measurement_type_id = $1 ORDER BY measurement_time DESC;")
+        .await
+        .unwrap();
 
     let result = client
         .query(&stmt, &[&measurement_type_id])
@@ -182,4 +181,38 @@ pub async fn select_location_by_id(client: &Client, location_id: i32) -> Result<
         .collect::<Vec<Location>>()
         .pop()
         .ok_or(MyError::NotFound)
+}
+
+pub async fn get_average_by_location(
+    client: &Client,
+    location_id: i32,
+) -> Result<Vec<AverageKpi>, MyError> {
+    let stmt = client
+        .prepare(r#"
+                SELECT AVG(measurements.measurement_value) AS average_value,
+                    locations.location_name AS location_name,
+                    measurement_types.measurement_type_name AS measurement_type_name
+                FROM measurements
+                    INNER JOIN locations ON measurements.location_id = locations.location_id
+                    INNER JOIN measurement_types ON measurements.measurement_type_id = measurement_types.measurement_type_id
+                WHERE measurements.location_id = $1
+                GROUP BY locations.location_name,
+                    measurement_types.measurement_type_name;
+            "#
+        )
+        .await
+        .unwrap();
+
+    let result = client
+        .query(&stmt, &[&location_id])
+        .await?
+        .iter()
+        .map(|row| AverageKpi {
+            average_value: row.get(0),
+            location_name: row.get(1),
+            measurement_name: row.get(2),
+        })
+        .collect::<Vec<AverageKpi>>();
+
+    Ok(result)
 }
