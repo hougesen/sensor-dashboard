@@ -1,0 +1,17 @@
+[package]
+name = "rust-dashboard"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+sycamore = { version = "0.7.1", features = ["futures"] }
+serde = { version = "1.0.104", features = ["derive"] }
+chrono = {version = "0.4", features = ["serde"]}
+reqwasm = "0.3.1"
+anyhow = "1.0"
+console_error_panic_hook = "0.1.7"
+console_log = "0.2.0"
+wasm-bindgen-futures = "0.4.28"
+sycamore-router = "0.7.0"
