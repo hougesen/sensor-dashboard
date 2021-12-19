@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
 use handlers::*;
@@ -19,7 +20,10 @@ async fn main() -> std::io::Result<()> {
     let pool = config.pg.create_pool(NoTls).unwrap();
 
     let server = HttpServer::new(move || {
+        let cors = Cors::default().allow_any_method().allow_any_origin();
+
         App::new()
+            .wrap(cors)
             .data(pool.clone())
             .service(hello)
             .service(post_measurement)
@@ -32,6 +36,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_locations)
             .service(get_location_by_id)
             .service(post_location)
+            .service(get_average_by_location)
     })
     .bind(config.server_addr.clone())?
     .run();
