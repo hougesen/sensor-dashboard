@@ -1,4 +1,4 @@
-# sensor-dashboard
+# hometemp
 
 Sensor dashboard built around the BME680 sensor for tracking temperature, humidity, pressure and gas readings.
 
