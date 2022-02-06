@@ -4,10 +4,13 @@ use anyhow::Result;
 use sycamore::prelude::*;
 
 #[component(Dashboard<G>)]
-pub fn dashboard(props: Result<Vec<AverageKpi>>) -> View<G> {
+pub fn dashboard(props: Result<DashboardModel>) -> View<G> {
     match props {
-        Ok(averages) => view! {
-            render_kpis::RenderKpis(averages)
+        Ok(props) => view! {
+            render_kpis::RenderKpis(props.averages)
+            div {
+                chart::Chart(props.measurements)
+            }
         },
         Err(_) => view! {
             "Error fetching data."

@@ -6,7 +6,7 @@ Created using Rust, Python and PostgreSQL.
 
 ### Dashboard
 
-The purpose of the dashboard is to easily track changes in the sensor readings. I am planning on creating the dashboard using React or Nuxt.js - still haven't decided, yet.
+The purpose of the dashboard is to easily track changes in the sensor readings.
 
 ### Sensor
 
@@ -22,19 +22,19 @@ The api is currently a basic rest api written in Rust & Actix connected to a Pos
 
 The project is built around a PostgreSQL database with the following tables:
 
--   Locations
+-   locations
 
-    -   location_id INT PK,
+    -   location_id SERIAL PK,
     -   location_name VARCHAR(255) NOT NULL
 
--   MeasurementTypes
+-   measurement_types
 
-    -   measurement_type_id INT PK
-    -   measurement_type_name VARCHAR(255)
+    -   measurement_type_id SERIAL PK
+    -   measurement_type_name VARCHAR(255) UNIQUE
 
--   Measurements
-    -   measurement_id INT PK
-    -   measurement_type_id INT FK (Ref: MeasurementTypes.measurement_type_id)
-    -   location_id INT FK (Ref: Locations.location_id)
-    -   measurement_value DECIMAL
-    -   measurement_time TIMESTAMP
+-   measurements
+    -   measurement_id SERIAL PK
+    -   measurement_type_id INT FK (Ref: measurement_types.measurement_type_id)
+    -   location_id INT FK (Ref: locations.location_id)
+    -   measurement_value REAL
+    -   measurement_time TIMESTAMP WITH TIME ZONE

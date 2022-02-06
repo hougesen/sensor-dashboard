@@ -186,31 +186,37 @@ pub async fn select_location_by_id(client: &Client, location_id: i32) -> Result<
 pub async fn get_average_by_location(
     client: &Client,
     location_id: i32,
+    measurement_type_id: i32,
 ) -> Result<Vec<AverageKpi>, MyError> {
     let stmt = client
         .prepare(r#"
-                SELECT AVG(measurements.measurement_value) AS average_value,
-                    locations.location_name AS location_name,
-                    measurement_types.measurement_type_name AS measurement_type_name
-                FROM measurements
-                    INNER JOIN locations ON measurements.location_id = locations.location_id
-                    INNER JOIN measurement_types ON measurements.measurement_type_id = measurement_types.measurement_type_id
-                WHERE measurements.location_id = $1
-                GROUP BY locations.location_name,
-                    measurement_types.measurement_type_name;
+                    SELECT AVG(measurements.measurement_value) AS average_value,
+                        measurements.measurement_time::date AS measurement_date,
+                        locations.location_name AS location_name,
+                        measurement_types.measurement_type_name AS measurement_type_name
+                    FROM measurements
+                        INNER JOIN locations ON measurements.location_id = locations.location_id
+                        INNER JOIN measurement_types ON measurements.measurement_type_id = measurement_types.measurement_type_id
+                    WHERE measurements.location_id = $1
+                        AND measurements.measurement_type_id = $2
+                    GROUP BY locations.location_name,
+                        measurement_types.measurement_type_name,
+                        measurements.measurement_time::date
+                    ORDER BY measurements.measurement_time::date;
             "#
         )
         .await
         .unwrap();
 
     let result = client
-        .query(&stmt, &[&location_id])
+        .query(&stmt, &[&location_id, &measurement_type_id])
         .await?
         .iter()
         .map(|row| AverageKpi {
             average_value: row.get(0),
-            location_name: row.get(1),
-            measurement_name: row.get(2),
+            measurement_date: row.get(1),
+            location_name: row.get(2),
+            measurement_name: row.get(3),
         })
         .collect::<Vec<AverageKpi>>();
 

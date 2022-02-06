@@ -31,4 +31,5 @@ pub struct AverageKpi {
     pub measurement_name: String,
     pub location_name: String,
     pub average_value: f64,
+    pub measurement_date: String,
 }

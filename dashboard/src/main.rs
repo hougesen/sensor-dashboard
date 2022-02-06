@@ -22,13 +22,13 @@ fn app() -> View<G> {
             let template = Signal::new(View::empty());
             create_effect(cloned!((template) => move || {
                 let route = route.get();
+
                 spawn_local(cloned!((template) => async move {
                     let t = match route.as_ref() {
                         AppRoutes::Dashboard  => {
-                            let data = services::fetch_average_by_location(1).await;
-                            println!("data {:#?}", data);
-                            view! {
-                                pages::dashboard::Dashboard(data)
+                            let dashboard_data = services::generate_dashboard(1).await;
+                             view! {
+                                pages::dashboard::Dashboard(dashboard_data)
                             }
                         },
                         AppRoutes::NotFound => view! {
